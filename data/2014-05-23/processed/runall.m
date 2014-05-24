@@ -3,6 +3,8 @@
 % file. The mat file contains a table with all the data from the flights
 % concatenated.
 %
+% runs a shell script (`rm_double_quotes.sh`) to remove double quotes
+%
 % Future work: this is pretty clumsy, and even with just 2 csv files, it's
 % already getting quite large. Maybe consider adding some pre-processing (e.g.
 % removing useless entries, etc).
@@ -10,11 +12,19 @@
 % Kristfofer D. Kusano - 5/23/14
 clear all;
 clc
+%% run shell script to remove double quotes
+flines = repmat('-', 1, 69);
+fprintf([flines, '\nRemoving double quotes\n', flines]);
+
+if exist('rm_double_quotes.sh', 'file')
+  [~, cmdout] = system(['C:\cygwin\bin\bash rm_double_quotes.sh']);
+  disp(cmdout);
+end
 %% find all CSV from data folder
 save_file = 'bts_flights.mat';  % save in processed folder, all csvs combined
 data_dir = dir('..');
 names_dir = {data_dir.name};
-idx_csv = ~cellfun(@isempty, regexp(names_dir, '\.csv$')); % only csv file names
+idx_csv = ~cellfun(@isempty, regexp(names_dir, '\.csv.tmp$')); % only csv file names
 csv_paths = names_dir(idx_csv); % path to csvs
 csv_bytes = [data_dir(idx_csv).bytes];
 
@@ -41,6 +51,9 @@ flights = vertcat(d_store{:}); % stack up all
 % make all column names lower case
 flights.Properties.VariableNames = ...
     cellfun(@lower, flights.Properties.VariableNames, 'uni', false);
+
+% remove extra variable at end
+flights.var22 = [];
 
 save(save_file, 'flights'); % save in mat
 %% make summary file
@@ -71,3 +84,9 @@ fprintf(fid, 'SHA1 Sum:\n%s\n', hash_raw);
 
 % done, close
 fclose(fid);
+%% clean up temps
+disp('cleaning up')
+for i = 1:ncsv
+    fprintf(' removing %s\n', csv_paths{i});
+    delete(['../', csv_paths{i}]);
+end
