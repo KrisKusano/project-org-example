@@ -17,7 +17,16 @@ Kristofer D. Kusano
 
 1. Extract out all flights that originated at ROA and IAD
 2. Compare the level of delay between them
+  * Number of Canceled flights
+  * Cancelation Reason
+  * Cumulative Distribution of Delay Time
+
+### Results
+
+### Conclusions
+
+### GitHub commit
 
 ### Other notes
 * I discovered that some of the fields (e.g. `origin`, `crs_dep_time`)
-  are enclosed in double quotes. Write a shell script to remove them.
+  are enclosed in double quotes. Wrote a shell script to remove them.
