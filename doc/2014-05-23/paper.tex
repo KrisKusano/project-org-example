@@ -1,0 +1,54 @@
+\documentclass[dvips,letterpaper]{article}
+\usepackage[dvips]{graphicx}
+
+% packages
+\usepackage{hyperref}
+\usepackage{booktabs}
+
+% results dir
+\newcommand{\resultsdir}{../../results/2014-05-23/}
+
+% doc info
+\author{Kristofer D. Kusano}
+\title{Flight Delays at ROA and IAD Airports}
+\date{May, 25 2014}
+
+\begin{document}
+% abstract
+\maketitle
+
+\begin{abstract}
+  Flying out of the Roanoke Region Airport (code ROA) has its challenges.
+  It seems like flights going to and from small airports like ROA are frequently delayed.
+  Bigger airports, like Washington Dulles International Airport, might not suffer from the same types of delays.
+  This white paper compares delay times between ROA and IAD using a record of all flights originating from or traveling to the two airports.
+\end{abstract}
+
+\section{Methods}
+\label{sec:Methods}
+Flight records were retrieved from the Research and Innovation Transportation Agency (RITA), Bureau of Transportation for Statistics (BTS).
+The BTS provides data on departure and arrival times for flights originating and departing from commercial airports in the U.S.\footnote{Data are available for download from
+  \url{http://www.transtats.bts.gov/DL_SelectFields.asp?Table_ID=236)}}
+
+In an attempt to limit confounding factors, two months were selected that were representative of a high and low delay time periods.
+Flight records were downloaded for the entire months of September 2013 and February 2014.
+September was selected as a month without holiday travel and without severe weather.
+February was selected as a month with bad weather that may have had higher than usual delays.
+The winter of 2013-2014 featured the ``polar vortex'' weather phenomenon that caused multiple delays.
+\section{Results}
+\label{sec:Results}
+
+\subsection{Selected Flights}
+\label{sub:select}
+The number of flights to or from ROA in February 2014 and September 2013 is shown in Table~\ref{tab:nflights}.
+\input{\resultsdir tab_nflights.tex}
+
+The number of canceled flights was much higher in February than in September.
+Table~\ref{tab:cancelled_by_month} shows the number of flights that were cancelled in each month at both the airports.
+The proportion of cancelled flights was approximately 10 times higher in February than in September.
+\input{\resultsdir tab_cancelled_by_month.tex}
+
+\subsection{Cancelled Flights at ROA and IAD}
+\label{sub:canelled}
+
+\end{document}

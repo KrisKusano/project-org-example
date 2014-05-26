@@ -2,3 +2,9 @@
 *.csv
 *.asv
 *.tmp
+*.Rhistory
+doc/*/*.aux
+doc/*/*.dvi
+doc/*/*.log
+doc/*/*.out
+doc/*/*.pdf

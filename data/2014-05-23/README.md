@@ -19,7 +19,7 @@ folder
 
 Data Processing
 -----------------
-A script to read in all the \*.csv files is in the ./processed folder
+CSV files downloaded are read in and combined by R scripts.
 
 Data Elements
 -------------

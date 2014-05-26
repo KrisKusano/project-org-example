@@ -21,12 +21,16 @@ Kristofer D. Kusano
   * Cancelation Reason
   * Cumulative Distribution of Delay Time
 
+After one session of writting lots of utility functions for MATLAB, I
+thought to myself: "Wouldn't this just be easier in R?" So I started to
+write an R script to do the analysis (`roa_vs_iad.r`).
 ### Results
-
-### Conclusions
-
-### GitHub commit
+I wrote the results in a LaTeX document in the `doc/2014-05-23/paper.tex`.
 
 ### Other notes
 * I discovered that some of the fields (e.g. `origin`, `crs_dep_time`)
-  are enclosed in double quotes. Wrote a shell script to remove them.
+  are enclosed in double quotes. Wrote a shell script to remove them
+  (`results/2014-05-23/processed/rm_double_quotes.sh`). The double
+  quotes was an issue when I was writting in MATLAB, but R in it's
+  infinite wisdom does not care. I left the shell script in the git repo
+  so I can look at it later.
