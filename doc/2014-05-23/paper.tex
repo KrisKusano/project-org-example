@@ -50,5 +50,34 @@ The proportion of cancelled flights was approximately 10 times higher in Februar
 
 \subsection{Cancelled Flights at ROA and IAD}
 \label{sub:canelled}
+Figure~\ref{fig:cancelled_by_month} shows the percentage of flights that were cancelled involving both airports.
+In February, slightly more flights were cancelled out of ROA and IAD.
+The reverse trend was observed in September, where almost no flights were cancelled from ROA.
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics{\resultsdir cancelled_by_month.eps}
+  \caption{Cancelled Flights by Month at ROA and IAD}
+  \label{fig:cancelled_by_month}
+\end{figure}
 
+\subsection{Delay Times}
+\label{sub:delay_cdf}
+Figure~\ref{fig:ecdf_delays} shows the cumulative distribution of delay times at each airport.
+A negative delay time corresponds to a flight that left before the scheduled departure time.
+Overall, only half of all flights depart before or at the scheduled departure time.
+When the weather is bad (February), departure delays were similar between airports.
+When weather was good (September), ROA had fewer delays.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics{\resultsdir delay_time_cdfs.eps}
+  \caption{Delay Times}
+  \label{fig:ecdf_delays}
+\end{figure}
+
+\section{Conclusions}
+\label{sec:Conclusions}
+During good weather, ROA appears to have lower cancellation and more flights that leave on time compared to IAD.
+During poor weather, however, ROA experienced more cancellations but similar delays as IAD.
+Maybe our little airport is not so bad after all\ldots
 \end{document}

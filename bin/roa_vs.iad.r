@@ -1,9 +1,14 @@
 # compare ROA to IAD flights
 # note: need to set current working directory (swd) to bin/
 #
-require(grDevices)
-require(digest)
-require(xtable)
+# Future steps: convert graphics to ggplot2
+
+require(grDevices)  # export eps files
+require(digest)  # summarize input data
+require(xtable)  # export to LaTeX
+require(ggplot2)  # make pretty plots
+require(gridExtra)  # muliple plots with grid.arrange
+library(scales)  # change axes to percent
 # Load in Data ----------
 export_plots = TRUE
 plot_dir = "../results/2014-05-23";
@@ -50,6 +55,7 @@ close(fid)
 
 nroa <- sum(idx_roa)
 niad <- sum(idx_iad)
+print("Data Summary:")
 print(sprintf("Flights from ROA: %.0f", nroa))
 print(sprintf("Flights from IAD: %.0f", niad))
 print(sprintf("Flights from Either: %.0f", sum(idx_roa & idx_roa)))
@@ -63,18 +69,22 @@ ftab$Airport <- rownames(ftab)
 ftab$N <- format(ftab$N, big.mark=",", scientific=F)
 ftab <- ftab[,c(2,1)]
 
+# export
+tab_name <- "tab_nflights.tex"
 s <- xtable(ftab,
             caption=("Number of Flights from ROA and IAD in February 2014 and September 2013"),
             align=c("l", "l", "r"))
 label(s) <- "tab:nflights"
 print(s,
-      file=paste(plot_dir, "tab_nflights.tex", sep="/"),
+      file=paste(plot_dir, tab_name, sep="/"),
       caption.placement="top",
       comment=FALSE,
       include.rownames=FALSE,
       booktabs=TRUE,
       table.placement="!htbp")
+print(sprintf("Output table '%s'", tab_name))
 # Cancelled Flights by Month -----------------------------------------------
+# make table
 c_all <- table(f$month, f$cancelled)  # cancelled by month
 c_all_out <- rbind(c_all, colSums(c_all))  # add total
 c_all_pct <- sweep(c_all, 1, rowSums(c_all), "/") # add percent
@@ -88,19 +98,22 @@ c_all_out <- cbind(c_all_out, c_all_pct)  # combine
 c_all_out <- c_all_out[,c(1,2,4)] # keep only cancelled
 c_all_out <- cbind(c("February 2014", "September 2013", "Total"), c_all_out)
 colnames(c_all_out) <- c("Month", "Flights", "Cancelled", "% Cancelled")
-print(c_all_out)
+# print(c_all_out)
 
+# export
+tab_name <- "tab_cancelled_by_month.tex"
 s <- xtable(c_all_out,
             caption="Cancelled Flights by Month",
             align=c("l", "l","r", "r", "r"))
 label(s) <- "tab:cancelled_by_month"
 print(s,
-      file=paste(plot_dir, "tab_cancelled_by_month.tex", sep="/"),
+      file=paste(plot_dir, tab_name, sep="/"),
       comment=FALSE,,
       include.rownames=FALSE,
       caption.placement="top",
       booktabs=TRUE,
       table.placement="!htbp")
+print(sprintf("Output table '%s'", tab_name))
 # Canceled Flights --------------------------------------------------------
 # if (export_plots)
 # {
@@ -135,19 +148,21 @@ text(bh, cancelled[2,], labels=paste0(round(cancelled[2,]*100, 1), "%"), cex=1, 
 # Canceled flights by month -----------------------------------------------
 if (export_plots)
 {
+  plot_name <- 'cancelled_by_month.eps'
   setEPS()
-  postscript(paste(plot_dir, 'cancelled_by_month.eps', sep="/"),
+  postscript(paste(plot_dir, plot_name, sep="/"),
              onefile=FALSE,
              paper="special",
              width=4.0,
-             height=3.0)
+             height=3.0,
+             pointsize=9)
 }
 cmonth <- table(f$cancelled,
                 f$airport,
                 factor(f$month, labels=c("Feb 2014", "Sep 2013")))
 cmonth <- sweep(cmonth, c(2,3), colSums(cmonth, dims=1), "/")  # conver to percent
 
-yl = c(0, ceiling(max(cmonth[2,,])*100)/100 + 0.01)
+yl = c(0, ceiling(max(cmonth[2,,])*100)/100 + 0.02)
 yt = seq(yl[1], yl[2], 0.05)
 bh <- barplot(cmonth[2,,], 
               beside=TRUE, 
@@ -164,4 +179,56 @@ text(bh, cmonth[2,,],
 if (export_plots)
 {
   dev.off()
+  print(sprintf("Exported plot '%s'", plot_name))
+}
+
+# Delay Time by Month -----------------------------------------------------
+if (export_plots)
+{
+  plot_name <- "delay_time_cdfs.eps"
+  setEPS()
+  postscript(paste(plot_dir, plot_name, sep="/"),
+             onefile=FALSE,
+             paper="special",
+             width=4.0,
+             height=6.0,
+             pointsize=9)
+}
+idx_nc <-  f$cancelled == 0
+idx_feb <- f$month == 2 & idx_nc
+idx_sep <- f$month == 9 & idx_nc
+
+xl <- c(-10, 150)
+gg_ecdf <- function(xdata)
+{
+  ggplot(xdata, aes(x=dep_delay, colour=airport)) + 
+    stat_ecdf() + 
+    scale_y_continuous(name="Cumulative\nFrequency",
+                       labels=percent) +
+    scale_x_continuous(name="", limits=xl) +
+    theme(text = element_text(size=9))
+}
+
+# Feb
+p1 <- gg_ecdf(f[idx_feb,]) +
+  theme(legend.position = c(1, 0),
+        legend.justification=c(1,0)) +
+  ggtitle("February 2014")
+
+# Sept
+p2 <- gg_ecdf(f[idx_sep,])  +
+  theme(legend.position="none") + # no legend
+  ggtitle("September")
+  
+# Both
+p3 <- gg_ecdf(f[idx_nc,]) +
+  theme(legend.position="none") + # no legend
+  scale_x_continuous(name="Delay Time (min)", limits=xl) +
+  ggtitle("All Months")
+  
+grid.arrange(p1, p2, p3, ncol=1)
+
+if (export_plots) {
+  dev.off()
+  print(sprintf("Exported plot '%s'", plot_name))
 }
